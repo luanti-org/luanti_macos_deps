@@ -1,6 +1,7 @@
 # Group of scripts for build macOS deps
 
 Script `build.sh` is for manual run of build.
+Should work for macOS 11 and newer.
 
 ## Common deps
 
