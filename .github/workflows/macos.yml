@@ -12,10 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare
+      - name: Prepare deps build for macOS 11.3
         run: |
           source sdk.sh
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
+          echo "osver=11.3" >> $GITHUB_ENV
+          echo "xcodever=16.2" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
           install_macos_sdk 11.3
 
@@ -34,13 +36,13 @@ jobs:
           mkdir $REPDIR/arm64_deps
           cd $REPDIR/arm64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps arm64 11.3 16.2 $REPDIR/macos_arm64_deps
+          build_macos_deps arm64 $osver $xcodever $REPDIR/macos_arm64_deps
 
       - name: Build ANGLE for arm64
         run: |
           source angle.sh
           cd $REPDIR/sources
-          build_macos_angle arm64 11.3 16.2 $REPDIR/macos_arm64_deps $REPDIR/data
+          build_macos_angle arm64 $osver $xcodever $REPDIR/macos_arm64_deps $REPDIR/data
 
       - name: Build deps for x86_64
         run: |
@@ -48,26 +50,26 @@ jobs:
           mkdir $REPDIR/x86_64_deps
           cd $REPDIR/x86_64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps x86_64 11.3 16.2 $REPDIR/macos_x86_64_deps
+          build_macos_deps x86_64 $osver $xcodever $REPDIR/macos_x86_64_deps
 
       - name: Create archive from arm64 and x86_64 deps
         run: |
-          tar -czvf macos_arm64_deps.tar.gz macos_arm64_deps
-          tar -czvf macos_x86_64_deps.tar.gz macos_x86_64_deps
+          tar -czvf macos${osver}_arm64_deps.tar.gz macos_arm64_deps
+          tar -czvf macos${osver}_x86_64_deps.tar.gz macos_x86_64_deps
 
       - name: Upload deps
         uses: actions/upload-artifact@v4
         with:
           name: macos_x86_64_deps
-          path: ./macos_x86_64_deps.tar.gz
+          path: ./macos${osver}_x86_64_deps.tar.gz
 
       - name: Upload Release Asset for arm64
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./macos_arm64_deps.tar.gz
-          asset_name: macos_arm64_deps.tar.gz
+          file: ./macos${osver}_arm64_deps.tar.gz
+          asset_name: macos${osver}_arm64_deps.tar.gz
           tag: latest
 
       - name: Upload Release Asset for x86_64
@@ -75,6 +77,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./macos_x86_64_deps.tar.gz
-          asset_name: macos_x86_64_deps.tar.gz
+          file: ./macos${osver}_x86_64_deps.tar.gz
+          asset_name: macos${osver}_x86_64_deps.tar.gz
           tag: latest
