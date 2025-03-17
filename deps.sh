@@ -22,7 +22,7 @@ download_macos_deps() {
 	download_macos_archive libvorbis.tar.gz https://github.com/sfence/libvorbis/archive/refs/tags/v1.3.7_macos_apple_silicon.tar.gz 61dd22715136f13317326ea60f9c1345529fbc1bf84cab99d6b7a165bf86a609
 	download_macos_archive luajit.zip https://github.com/sfence/LuaJIT/archive/refs/heads/sfence_macos_fix_and_map_jit.zip c5a16e3c09bc5f38941752f8fc7e420562660feb2a447bc4a7851f4e49c21249
 	download_macos_archive zstd.tar.gz https://github.com/facebook/zstd/archive/refs/tags/v1.5.6.tar.gz 30f35f71c1203369dc979ecde0400ffea93c27391bfd2ac5a9715d2173d92ff7
-	download_ios_archive sdl2.tar.gz https://github.com/libsdl-org/SDL/releases/download/release-2.32.0/SDL2-2.32.0.tar.gz f5c2b52498785858f3de1e2996eba3c1b805d08fe168a47ea527c7fc339072d0
+	download_macos_archive sdl2.tar.gz https://github.com/libsdl-org/SDL/releases/download/release-2.32.0/SDL2-2.32.0.tar.gz f5c2b52498785858f3de1e2996eba3c1b805d08fe168a47ea527c7fc339072d0
 }
 
 untar_macos_deps() {
