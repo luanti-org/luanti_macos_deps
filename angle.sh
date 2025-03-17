@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-clone_ios_angle() {
+clone_macos_angle() {
 	datadir=$1
 
 	depot_hash="6d817fd7f4c19cde114d7cfb62fc5b313521776b"
@@ -29,7 +29,7 @@ clone_ios_angle() {
 	cd ..
 }
 
-build_ios_angle() {
+build_macos_angle() {
 	arch=$1
 	osver=$2
 	xcodever=$3
@@ -49,14 +49,8 @@ build_ios_angle() {
 	echo "Configuring angle..."
 	gn gen out
 	cp $datadir/args.gn out
-	# Update ios_sdk_version in the file
-	sed -i.bak "s/^ios_sdk_version = .*/ios_sdk_version = \"$osver\"/" "out/args.gn"
-	# Update target_os in the file
-	if [[ $arch == "iPhoneSimulator" ]]; then
-		sed -i.bak "s/^target_environment = .*/target_environment = \"simulator\"/" "out/args.gn"
-	else
-		sed -i.bak "s/^target_environment = .*/target_environment = \"device\"/" "out/args.gn"
-	fi
+	# Update macos_sdk_version in the file
+	sed -i.bak "s/^macos_sdk_version = .*/macos_sdk_version = \"$osver\"/" "out/args.gn"
 	gn gen out
 	echo "Building angle..."
 	ninja -j 6 -C out

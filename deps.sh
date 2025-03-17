@@ -48,6 +48,8 @@ build_macos_deps() {
 	xcodever=$3
 	installdir=$4
 	
+	dir=$(pwd)
+
 	# setup environment
 	xcodeapp="Xcode.app"
 	if [[ -n $xcodever ]]; then
@@ -58,14 +60,15 @@ build_macos_deps() {
 		sysroot="/Library/Developer/CommandLineTools/SDKs/MacOSX${osx}.sdk"
 	fi
 	if [ ! -d "$sysroot" ]; then
+		sysroot="$dir/MacOSX${osx}.sdk"
+	fi
+	if [ ! -d "$sysroot" ]; then
 		echo "Requested sysroot SDK does not found MacOSX${osx}.sdk"
 		exit 1
 	fi
 	if [[ -n $xcodever ]]; then
 		sudo xcode-select -s /Applications/$xcodeapp/Contents/Developer
 	fi
-
-	dir=$(pwd)
 
 	export MACOSX_DEPLOYMENT_TARGET=$osx
 	export MACOS_DEPLOYMENT_TARGET=$osx
