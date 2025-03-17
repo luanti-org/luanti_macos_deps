@@ -17,7 +17,7 @@ jobs:
           source sdk.sh
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
-          install_sdk 11.3
+          install_macos_sdk 11.3
 
       - name: Download/clone sources
         run: |

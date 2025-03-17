@@ -28,25 +28,21 @@ install_macos_sdk() {
 					https://github.com/alexey-lysiuk/macos-sdk/releases/download/11.3/MacOSX11.3.tar.bz2 \
 					d6604578f4ee3090d1c3efce1e5c336ecfd7be345d046c729189d631ea3b8ec6
 			tar -xf SDK.tar.bz2
-			sysroot=$dir/MacOSX11.3.sdk
 		elif [[ "$osx" == "12.3" ]]; then
 			download_macos_archive SDK.tar.bz2 \
 					https://github.com/alexey-lysiuk/macos-sdk/releases/download/12.3/MacOSX12.3.tar.bz2 \
 					91c03be5399be04d8f6b773da13045525e01298c1dfff273b4e1f1e904ee5484
 			tar -xf SDK.tar.bz2
-			sysroot=$dir/MacOSX12.3.sdk
 		elif [[ "$osx" == "13.3" ]]; then
 			download_macos_archive SDK.tar.bz2 \
 					https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.bz2 \
 					71ae3a78ab1be6c45cf52ce44cb29a3cc27ed312c9f7884ee88e303a862a1404
 			tar -xf SDK.tar.bz2
-			sysroot=$dir/MacOSX13.3.sdk
 		elif [[ "$osx" == "14.5" ]]; then
 			download_macos_archive SDK.tar.bz2 \
 					https://github.com/alexey-lysiuk/macos-sdk/releases/download/14.5/MacOSX14.5.tar.bz2 \
 					f6acc6209db9d56b67fcaf91ec1defe48722e9eb13dc21fb91cfeceb1489e57e
 			tar -xf SDK.tar.bz2
-			sysroot=$dir/MacOSX14.5.sdk
 		else
 			echo "This SDK target is not supported."
 			exit 1
