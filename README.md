@@ -2,11 +2,12 @@
 
 Script `build.sh` is for manual run of build.
 Should work for macOS 11 and newer.
+Auto download of SDK is supported for macOS 11.3, 12.3, 13.3 and 14.5.
 
 ## Common deps
 
 Common deps libpng, gettext, freetype, gpm, libjep-turbo, joncpp, liboff,
-libvorbis, luajit, zstd, sdl2 and curl are downloaded and built
+libvorbis, luajit, zstd and sdl2 are downloaded and built
 by functions in `deps.sh` script.
 
 ## ANGLE
