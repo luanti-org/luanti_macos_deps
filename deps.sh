@@ -87,18 +87,17 @@ build_macos_deps() {
 	echo "osver=$osver"
 	echo "dir=$dir"
 	echo "sysroot=$sysroot"
-	echo "includecxx=$includecxx"
 	echo "hostdarwin=$hostdarwin"
 	echo "hostdarwin=$hostmacos"
 	echo "dir=$dir"
 	echo "MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET MACOS_DEPLOYMENT_TARGET=$MACOS_DEPLOYMENT_TARGET "\
        "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH CPPFLAGS='$CPPFLAGS' CC='$CC' CXX='$CXX' "\
-       "LDFLAGS='$LDFLAGS' SDKROOT=$SDKROOT ls ."
+       "LDFLAGS='$LDFLAGS' SDKROOT=$SDKROOT"
 
 	# libpng
 	cd libpng-*
 	echo "Configuring libpng..."
-	./configure "--prefix=$installdir" $hostdarwin
+	./configure "--prefix=$installdir" $hostdarwin || cat config.log
 	echo "Building libpng..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make check
@@ -259,6 +258,6 @@ build_macos_deps() {
 	echo "Building SDL2..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
-	check_ios_file "$installdir/lib/libSDL2.a"
+	check_macos_file "$installdir/lib/libSDL2.a"
 	cd $dir
 }
