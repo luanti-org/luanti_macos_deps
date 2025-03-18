@@ -17,7 +17,7 @@ update_xcode_plist() {
 	cp $plist Info.plist
 	plutil -convert xml1 Info.plist
 	sed -i '' "/<key>MinimumSDKVersion<\/key>/{n;s/<string>.*<\/string>/<string>$minsdk<\/string>/;}" Info.plist
-	plutil -convert binary1 /path/to/Info.plist
+	plutil -convert binary1 Info.plist
 	cp Info.plist $plist
 }
 
