@@ -83,21 +83,10 @@ build_macos_deps() {
 		hostdarwin_limit="--host=arm-apple-darwin"
 	fi
 
-	echo "arch=$arch"
-	echo "osver=$osver"
-	echo "dir=$dir"
-	echo "sysroot=$sysroot"
-	echo "hostdarwin=$hostdarwin"
-	echo "hostdarwin=$hostmacos"
-	echo "dir=$dir"
-	echo "MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET MACOS_DEPLOYMENT_TARGET=$MACOS_DEPLOYMENT_TARGET "\
-       "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH CPPFLAGS='$CPPFLAGS' CC='$CC' CXX='$CXX' "\
-       "LDFLAGS='$LDFLAGS' SDKROOT=$SDKROOT"
-
 	# libpng
 	cd libpng-*
 	echo "Configuring libpng..."
-	./configure "--prefix=$installdir" $hostdarwin || cat config.log
+	./configure "--prefix=$installdir" $hostdarwin
 	echo "Building libpng..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make check
@@ -167,31 +156,6 @@ build_macos_deps() {
 					-DCMAKE_OSX_ARCHITECTURES=$arch \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building jsoncpp..."
-	make -j$(sysctl -n hw.logicalcpu)
-	make install
-	cd $dir
-
-	# snappy
-	cd snappy-*
-	echo "Configuring snappy..."
-	cmake . "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" -DSNAPPY_BUILD_TESTS=OFF \
-					-DSNAPPY_BUILD_BENCHMARKS=OFF \
-					-DCMAKE_OSX_ARCHITECTURES=$arch \
-					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
-	echo "Building snappy..."
-	make -j$(sysctl -n hw.logicalcpu)
-	make install
-	cd $dir
-
-	# leveldb
-	cd leveldb-*
-	echo "Configuring leveldb..."
-	cmake . "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" -DLEVELDB_BUILD_TESTS=OFF \
-					-DLEVELDB_BUILD_BENCHMARKS=OFF \
-					-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DBUILD_SHARED_LIBS=ON \
-					-DCMAKE_OSX_ARCHITECTURES=$arch \
-					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
-	echo "Building leveldb..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
 	cd $dir
