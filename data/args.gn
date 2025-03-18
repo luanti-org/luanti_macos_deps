@@ -2,9 +2,7 @@
 # See "gn args <out_dir> --list" for available build arguments.
 target_os = "macos"
 target_cpu = "arm64"
-target_environment = "simulator"
 mac_sdk_min = "15.1"
-mac_sdk_version = "15.1"
 dcheck_always_on = true
 is_component_build = false
 is_debug = false

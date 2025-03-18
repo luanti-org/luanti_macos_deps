@@ -60,9 +60,6 @@ build_macos_deps() {
 		sysroot="/Library/Developer/CommandLineTools/SDKs/MacOSX${osx}.sdk"
 	fi
 	if [ ! -d "$sysroot" ]; then
-		sysroot="$dir/../MacOSX${osx}.sdk"
-	fi
-	if [ ! -d "$sysroot" ]; then
 		echo "Requested sysroot SDK does not found MacOSX${osx}.sdk"
 		exit 1
 	fi

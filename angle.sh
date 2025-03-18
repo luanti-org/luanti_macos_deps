@@ -50,7 +50,7 @@ build_macos_angle() {
 	gn gen out
 	cp $datadir/args.gn out
 	# Update macos_sdk_version in the file
-	sed -i.bak "s/^macos_sdk_version = .*/macos_sdk_version = \"$osver\"/" "out/args.gn"
+	sed -i.bak "s/^mac_sdk_min = .*/mac_sdk_min = \"$osver\"/" "out/args.gn"
 	gn gen out
 	echo "Building angle..."
 	ninja -j 6 -C out

@@ -14,18 +14,21 @@ jobs:
 
       - name: Prepare deps build for macOS 11.3
         run: |
-          source sdk.sh
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
           echo "osver=11.3" >> $GITHUB_ENV
           echo "xcodever=16.2" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
-          install_macos_sdk 11.3
+
+      - name: Download macOS SDK
+        run: |
+          source sdk.sh
+          mkdir $REPDIR/sources
+          install_macos_sdk $osver $xcodever $REPDIR/sources
 
       - name: Download/clone sources
         run: |
           source deps.sh
           source angle.sh
-          mkdir $REPDIR/sources
           cd $REPDIR/sources
           download_macos_deps
           clone_macos_angle $REPDIR/data
@@ -70,6 +73,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./macos${osver}_arm64_deps.tar.gz
           asset_name: macos${osver}_arm64_deps.tar.gz
+          overwrite: true
           tag: latest
 
       - name: Upload Release Asset for x86_64
@@ -79,4 +83,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./macos${osver}_x86_64_deps.tar.gz
           asset_name: macos${osver}_x86_64_deps.tar.gz
+          overwrite: true
           tag: latest
