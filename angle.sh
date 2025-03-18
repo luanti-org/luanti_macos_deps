@@ -31,7 +31,7 @@ clone_macos_angle() {
 
 build_macos_angle() {
 	arch=$1
-	osx=$2
+	osver=$2
 	xcodever=$3
 	installdir=$4
 	datadir=$5

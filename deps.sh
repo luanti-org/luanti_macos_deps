@@ -68,8 +68,8 @@ build_macos_deps() {
 		sudo xcode-select -s /Applications/$xcodeapp/Contents/Developer
 	fi
 
-	export MACOSX_DEPLOYMENT_TARGET=$osx
-	export MACOS_DEPLOYMENT_TARGET=$osx
+	export MACOSX_DEPLOYMENT_TARGET=$osver
+	export MACOS_DEPLOYMENT_TARGET=$osver
 	export CMAKE_PREFIX_PATH=$installdir
 	export CPPFLAGS="-arch ${arch}"
 	export CC="clang -arch ${arch}"
