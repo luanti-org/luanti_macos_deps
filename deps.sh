@@ -42,6 +42,13 @@ untar_macos_deps() {
 	tar -xf $downdir/sdl2.tar.gz
 }
 
+check_macos_file() {
+	if [ ! -f "$1" ]; then
+		echo "File $1 not found"
+		exit 1
+	fi
+}
+
 build_macos_deps() {
 	arch=$1
 	osver=$2
@@ -86,11 +93,12 @@ build_macos_deps() {
 	# libpng
 	cd libpng-*
 	echo "Configuring libpng..."
-	./configure "--prefix=$installdir" $hostdarwin
+	./configure "--prefix=$installdir" $hostdarwin --enable-static --disable-shared
 	echo "Building libpng..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make check
 	make install
+	check_macos_file "$installdir/lib/libpng.a"
 	cd $dir
 
 	# freetype
@@ -98,23 +106,27 @@ build_macos_deps() {
 	echo "Configuring freetype..."
 	./configure "--prefix=${installdir}" "LIBPNG_LIBS=-L${installdir}/lib -lpng" \
 							"LIBPNG_CFLAGS=-I${installdir}/include" $hostdarwin \
+							--enable-static --disable-shared \
 							--with-harfbuzz=no --with-brotli=no --with-librsvg=no \
 							"CC_BUILD=clang -target ${arch}"
 	echo "Building freetype..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
+	check_macos_file "$installdir/lib/libfreetype.a"
 	cd $dir
 
 	# gettext
 	cd gettext-*
 	echo "Configuring gettext..."
-	./configure "--prefix=$installdir" --disable-silent-rules --with-included-glib \
+	./configure "--prefix=$installdir" --enable-static --disable-shared \
+							--disable-silent-rules --with-included-glib \
 							--with-included-libcroco --with-included-libunistring --with-included-libxml \
 							--with-emacs --disable-java --disable-csharp --without-git --without-cvs \
 							--without-xz --with-included-gettext $hostdarwin
 	echo "Building gettext..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
+	check_macos_file "$installdir/lib/libintl.a"
 	cd $dir
 
 	# gmp
@@ -127,12 +139,14 @@ build_macos_deps() {
 		assembly=--disable-assembly
 	fi
 	#./configure "--prefix=$installdir" --with-pic M4=/usr/local/Cellar/m4/1.4.19/bin/m4
-	./configure "--prefix=$installdir" --with-pic M4=/opt/homebrew/Cellar/m4/1.4.19/bin/m4 \
+	./configure "--prefix=$installdir" --enable-static --disable-shared \
+							--with-pic M4=/opt/homebrew/Cellar/m4/1.4.19/bin/m4 \
 							$hostdarwin $assembly
 	echo "Building gmp..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make check
 	make install
+	check_macos_file "$installdir/lib/libgmp.a"
 	cd $dir
 
 	# libjpeg-turbo
@@ -140,10 +154,12 @@ build_macos_deps() {
 	echo "Configuring libjpeg-turbo..."
 	cmake . "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
 					-DCMAKE_OSX_ARCHITECTURES=$arch §\
+					-DBUILD_SHARED_LIBS=OFF \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building libjpeg-turbo..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install "PREFIX=$installdir"
+	check_macos_file "$installdir/lib/libjpeg.a"
 	cd $dir
 
 	# jsoncpp
@@ -154,19 +170,22 @@ build_macos_deps() {
 	echo "Configuring jsoncpp..."
 	cmake .. "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
 					-DCMAKE_OSX_ARCHITECTURES=$arch \
+					-DBUILD_SHARED_LIBS=OFF \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building jsoncpp..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
+	check_macos_file "$installdir/lib/libjsoncpp.a"
 	cd $dir
 
 	# libogg
 	cd libogg-*
 	echo "Configuring libogg..."
-	./configure "--prefix=$installdir" $hostdarwin_limit
+	./configure "--prefix=$installdir" $hostdarwin_limit --enable-static --disable-shared
 	echo "Building libogg..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
+	check_macos_file "$installdir/lib/libogg.a"
 	cd $dir
 
 	# libvorbis
@@ -174,10 +193,11 @@ build_macos_deps() {
 	echo "Configuring libvorbis..."
 	./autogen.sh
 	OGG_LIBS="-L${installdir}/lib -logg" OGG_CFLAGS="-I${installdir}/include" ./configure "--prefix=$installdir"	\
-				$hostdarwin
+				$hostdarwin --enable-static --disable-shared
 	echo "Building libvorbis..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
+	check_macos_file "$installdir/lib/libvorbis.a"
 	cd $dir
 
 	# luajit
@@ -191,6 +211,7 @@ build_macos_deps() {
 				"CFLAGS=$jit_flags" "HOST_CFLAGS=$jit_flags" \
 				"TARGET_CFLAGS=$jit_flags" \
 				"PREFIX=$installdir"
+	check_macos_file "$installdir/lib/libluajit-5.1.a"
 	cd $dir
 
 	# zstd
@@ -200,10 +221,12 @@ build_macos_deps() {
 	echo "Configuring zstd..."
 	cmake . "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
 					-DCMAKE_OSX_ARCHITECTURES=$arch \
+					-DBUILD_SHARED_LIBS=OFF \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building zstd..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
+	check_macos_file "$installdir/lib/libzstd.a"
 	cd $dir
 	
 	# SDL2
