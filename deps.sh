@@ -83,6 +83,18 @@ build_macos_deps() {
 		hostdarwin_limit="--host=arm-apple-darwin"
 	fi
 
+	echo "arch=$arch"
+	echo "osver=$osver"
+	echo "dir=$dir"
+	echo "sysroot=$sysroot"
+	echo "includecxx=$includecxx"
+	echo "hostdarwin=$hostdarwin"
+	echo "hostdarwin=$hostmacos"
+	echo "dir=$dir"
+	echo "MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET MACOS_DEPLOYMENT_TARGET=$MACOS_DEPLOYMENT_TARGET "\
+       "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH CPPFLAGS='$CPPFLAGS' CC='$CC' CXX='$CXX' "\
+       "LDFLAGS='$LDFLAGS' SDKROOT=$SDKROOT ls ."
+
 	# libpng
 	cd libpng-*
 	echo "Configuring libpng..."
