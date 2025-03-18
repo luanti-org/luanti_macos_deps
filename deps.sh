@@ -57,10 +57,11 @@ build_macos_deps() {
 	fi
 	sysroot="/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${osx}.sdk"
 	if [ ! -d "$sysroot" ]; then
+		echo "SDK not in $sysroot. Try command line tools."
 		sysroot="/Library/Developer/CommandLineTools/SDKs/MacOSX${osx}.sdk"
 	fi
 	if [ ! -d "$sysroot" ]; then
-		echo "Requested sysroot SDK does not found MacOSX${osx}.sdk"
+		echo "Requested sysroot SDK does not found MacOSX${osx}.sdk (sysroot = $sysroot)"
 		exit 1
 	fi
 	if [[ -n $xcodever ]]; then
