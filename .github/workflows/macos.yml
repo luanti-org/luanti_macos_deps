@@ -16,14 +16,14 @@ jobs:
         run: |
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
           echo "osver=11.3" >> $GITHUB_ENV
-          echo "xcodever=16.2" >> $GITHUB_ENV
+          echo "xcodever=" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
 
       - name: Download macOS SDK
         run: |
           source sdk.sh
           mkdir $REPDIR/sources
-          install_macos_sdk $osver $xcodever $REPDIR/sources
+          install_macos_sdk $osver "$xcodever" $REPDIR/sources
 
       - name: Download/clone sources
         run: |
@@ -39,13 +39,13 @@ jobs:
           mkdir $REPDIR/arm64_deps
           cd $REPDIR/arm64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps arm64 $osver $xcodever $REPDIR/macos_arm64_deps
+          build_macos_deps arm64 $osver "$xcodever" $REPDIR/macos_arm64_deps
 
       - name: Build ANGLE for arm64
         run: |
           source angle.sh
           cd $REPDIR/sources
-          build_macos_angle arm64 $osver $xcodever $REPDIR/macos_arm64_deps $REPDIR/data
+          build_macos_angle arm64 $osver "$xcodever" $REPDIR/macos_arm64_deps $REPDIR/data
 
       - name: Build deps for x86_64
         run: |
@@ -53,7 +53,7 @@ jobs:
           mkdir $REPDIR/x86_64_deps
           cd $REPDIR/x86_64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps x86_64 $osver $xcodever $REPDIR/macos_x86_64_deps
+          build_macos_deps x86_64 $osver "$xcodever" $REPDIR/macos_x86_64_deps
 
       - name: Create archive from arm64 and x86_64 deps
         run: |
