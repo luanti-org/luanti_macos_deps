@@ -24,6 +24,10 @@ install_macos_sdk() {
 	fi
 	sysroot="/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${osx}.sdk"
 	if [ ! -d "$sysroot" ]; then
+		if [ ! -d "/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" ]; then
+			echo "No location for install SDK found. Xcode is probably not installed."
+			exit 1
+		fi
 		if [[ "$osx" == "11.3" ]]; then
 			download_macos_archive $downdir/SDK.tar.bz2 \
 					https://github.com/alexey-lysiuk/macos-sdk/releases/download/11.3/MacOSX11.3.tar.bz2 \
@@ -52,6 +56,9 @@ install_macos_sdk() {
 			echo "This SDK target is not supported."
 			exit 1
 		fi
+		echo "SDK downloaded and added to Xcode."
+	else
+		echo "SDK found in Xcode."
 	fi
 
 }
