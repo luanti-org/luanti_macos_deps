@@ -44,7 +44,7 @@ untar_macos_deps() {
 
 build_macos_deps() {
 	arch=$1
-	osx=$2
+	osver=$2
 	xcodever=$3
 	installdir=$4
 	
@@ -55,13 +55,13 @@ build_macos_deps() {
 	if [[ -n $xcodever ]]; then
 		xcodeapp="Xcode_$xcodever.app"
 	fi
-	sysroot="/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${osx}.sdk"
+	sysroot="/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${osver}.sdk"
 	if [ ! -d "$sysroot" ]; then
 		echo "SDK not in $sysroot. Try command line tools."
-		sysroot="/Library/Developer/CommandLineTools/SDKs/MacOSX${osx}.sdk"
+		sysroot="/Library/Developer/CommandLineTools/SDKs/MacOSX${osver}.sdk"
 	fi
 	if [ ! -d "$sysroot" ]; then
-		echo "Requested sysroot SDK does not found MacOSX${osx}.sdk (sysroot = $sysroot)"
+		echo "Requested sysroot SDK does not found MacOSX${osver}.sdk (sysroot = $sysroot)"
 		exit 1
 	fi
 	if [[ -n $xcodever ]]; then
@@ -77,7 +77,7 @@ build_macos_deps() {
 	export LDFLAGS="-arch ${arch}"
 	export SDKROOT=$sysroot
 	hostdarwin="--host=${arch}-apple-darwin"
-	hostmacos="--host=${arch}-apple-macos${osx}"
+	hostmacos="--host=${arch}-apple-macos${osver}"
 	hostdarwin_limit="--host=${arch}-apple-darwin"
 	if [[ $arch == "arm64" ]]; then
 		hostdarwin_limit="--host=arm-apple-darwin"

@@ -22,7 +22,7 @@ install_macos_sdk() {
 	if [[ -n $xcodever ]]; then
 		xcodeapp="Xcode_$xcodever.app"
 	fi
-	sysroot="/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${osx}.sdk"
+	sysroot="/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${osver}.sdk"
 	if [ ! -d "$sysroot" ]; then
 		if [ ! -d "/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" ]; then
 			echo "No location for install SDK found. Xcode is probably not installed. (sysroot = $sysroot)"
@@ -53,7 +53,7 @@ install_macos_sdk() {
 			tar -xf $downdir/SDK.tar.bz2
 			mv MacOSX14.5.sdk $sysroot
 		else
-			echo "This SDK target is not supported. (osx = $osver)"
+			echo "This SDK target is not supported. (osver = $osver)"
 			exit 1
 		fi
 		echo "SDK downloaded and added to Xcode."
