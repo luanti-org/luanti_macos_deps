@@ -16,7 +16,7 @@ jobs:
         run: |
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
           echo "osver=11.3" >> $GITHUB_ENV
-          echo "xcodever=" >> $GITHUB_ENV
+          echo "xcodever=16.2" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
 
       - name: Download macOS SDK
