@@ -1,6 +1,6 @@
 # Build arguments go here.
 # See "gn args <out_dir> --list" for available build arguments.
-target_os = "macos"
+target_os = "mac"
 target_cpu = "arm64"
 mac_sdk_min = "15.1"
 dcheck_always_on = true
