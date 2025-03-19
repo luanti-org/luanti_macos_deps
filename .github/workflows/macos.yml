@@ -6,17 +6,30 @@ on:
 
 jobs:
   build_macos_deps:
+    strategy:
+      matrix:
+        osver: [11.3,12.3]
+        xcodever: [16.2]
+        with_angle: [no, yes]
+        include:
+          - osver: 11.3
+            xcodever: 16.2
+            with_angle: no
+          - osver: 12.3
+            xcodever: 16.2
+            with_angle: yes
     runs-on: macos-15
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare deps build for macOS 11.3
+      - name: Prepare deps build for macOS ${{matrix.osver}}
         run: |
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
-          echo "osver=11.3" >> $GITHUB_ENV
-          echo "xcodever=16.2" >> $GITHUB_ENV
+          echo "osver=${{matrix.osver}}" >> $GITHUB_ENV
+          echo "xcodever=1${{matrix.xcodever}}" >> $GITHUB_ENV
+          echo "with_angle=${{matrix.with_angle}}" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
 
       - name: Download macOS SDK
@@ -31,7 +44,9 @@ jobs:
           source angle.sh
           cd $REPDIR/sources
           download_macos_deps
-          clone_macos_angle $REPDIR/data
+          if [ $with_angle == "yes" ]; then
+            clone_macos_angle $REPDIR/data
+          fi
 
       - name: Build deps for arm64
         run: |
@@ -43,9 +58,11 @@ jobs:
 
       - name: Build ANGLE for arm64
         run: |
-          source angle.sh
-          cd $REPDIR/sources
-          build_macos_angle arm64 $osver "$xcodever" $REPDIR/macos_arm64_deps $REPDIR/data
+          if [ $with_angle == "yes" ]; then
+            source angle.sh
+            cd $REPDIR/sources
+            build_macos_angle arm64 $osver "$xcodever" $REPDIR/macos_arm64_deps $REPDIR/data
+          fi
 
       - name: Build deps for x86_64
         run: |
