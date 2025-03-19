@@ -11,6 +11,11 @@ jobs:
         osver: [11.3,12.3]
         xcodever: [16.2]
         with_angle: [no, yes]
+        exclude:
+          - osver: 11.3
+            with_angle: yes
+          - osver: 12.3
+            with_angle: no
         include:
           - osver: 11.3
             xcodever: 16.2
