@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
           echo "osver=${{matrix.osver}}" >> $GITHUB_ENV
-          echo "xcodever=1${{matrix.xcodever}}" >> $GITHUB_ENV
+          echo "xcodever=${{matrix.xcodever}}" >> $GITHUB_ENV
           echo "with_angle=${{matrix.with_angle}}" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
 
