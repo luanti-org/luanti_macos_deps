@@ -59,14 +59,14 @@ jobs:
           mkdir $REPDIR/arm64_deps
           cd $REPDIR/arm64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps arm64 $osver "$xcodever" $REPDIR/macos_arm64_deps
+          build_macos_deps arm64 $osver "$xcodever" $REPDIR/macos${osver}_arm64_deps
 
       - name: Build ANGLE for arm64
         run: |
           if [ $with_angle == "yes" ]; then
             source angle.sh
             cd $REPDIR/sources
-            build_macos_angle arm64 $osver "$xcodever" $REPDIR/macos_arm64_deps $REPDIR/data
+            build_macos_angle arm64 $osver "$xcodever" $REPDIR/macos${osver}_arm64_deps $REPDIR/data
           fi
 
       - name: Build deps for x86_64
@@ -75,26 +75,32 @@ jobs:
           mkdir $REPDIR/x86_64_deps
           cd $REPDIR/x86_64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps x86_64 $osver "$xcodever" $REPDIR/macos_x86_64_deps
+          build_macos_deps x86_64 $osver "$xcodever" $REPDIR/macos${osver}_x86_64_deps
 
       - name: Create archive from arm64 and x86_64 deps
         run: |
-          tar -czvf macos${osver}_arm64_deps.tar.gz macos_arm64_deps
-          tar -czvf macos${osver}_x86_64_deps.tar.gz macos_x86_64_deps
+          tar -czvf macos${osver}_arm64_deps.tar.gz macos${osver}_arm64_deps
+          tar -czvf macos${osver}_x86_64_deps.tar.gz macos${osver}_x86_64_deps
 
-      - name: Upload deps
+      - name: Upload deps for arm64
         uses: actions/upload-artifact@v4
         with:
-          name: macos_x86_64_deps
-          path: ./macos${osver}_x86_64_deps.tar.gz
+          name: macos${{matrix.osver}}_arm64_deps
+          path: ./macos${{matrix.osver}}_arm64_deps.tar.gz
+
+      - name: Upload deps for x86_64
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos${{matrix.osver}}_x86_64_deps
+          path: ./macos${{matrix.osver}}_x86_64_deps.tar.gz
 
       - name: Upload Release Asset for arm64
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./macos${osver}_arm64_deps.tar.gz
-          asset_name: macos${osver}_arm64_deps.tar.gz
+          file: ./macos${{matrix.osver}}_arm64_deps.tar.gz
+          asset_name: macos${{matrix.osver}}_arm64_deps.tar.gz
           overwrite: true
           tag: latest
 
@@ -103,7 +109,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./macos${osver}_x86_64_deps.tar.gz
-          asset_name: macos${osver}_x86_64_deps.tar.gz
+          file: ./macos${{matrix.osver}}_x86_64_deps.tar.gz
+          asset_name: macos${{matrix.osver}}_x86_64_deps.tar.gz
           overwrite: true
           tag: latest
