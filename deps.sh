@@ -138,9 +138,9 @@ build_macos_deps() {
 	if [[ "$(arch)" != "$arch" ]]; then
 		assembly=--disable-assembly
 	fi
-	#./configure "--prefix=$installdir" --with-pic M4=/usr/local/Cellar/m4/1.4.19/bin/m4
+	#./configure "--prefix=$installdir" --with-pic M4=/usr/local/Cellar/m4/1.4.20/bin/m4
 	./configure "--prefix=$installdir" --enable-static --disable-shared \
-							--with-pic M4=/opt/homebrew/Cellar/m4/1.4.19/bin/m4 \
+							--with-pic M4=/opt/homebrew/Cellar/m4/1.4.20/bin/m4 \
 							$hostdarwin $assembly
 	echo "Building gmp..."
 	make -j$(sysctl -n hw.logicalcpu)
