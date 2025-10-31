@@ -32,6 +32,7 @@ jobs:
       - name: Prepare deps build for macOS ${{matrix.osver}}
         run: |
           echo "REPDIR=$(pwd)" >> $GITHUB_ENV
+          echo "INSTALLDIR=/Users/Shared" >> $GITHUB_ENV
           echo "osver=${{matrix.osver}}" >> $GITHUB_ENV
           echo "xcodever=${{matrix.xcodever}}" >> $GITHUB_ENV
           echo "with_angle=${{matrix.with_angle}}" >> $GITHUB_ENV
@@ -59,14 +60,14 @@ jobs:
           mkdir $REPDIR/arm64_deps
           cd $REPDIR/arm64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps arm64 $osver "$xcodever" $REPDIR/macos${osver}_arm64_deps
+          build_macos_deps arm64 $osver "$xcodever" ${INSTALLDIR}/macos${osver}_arm64_deps
 
       - name: Build ANGLE for arm64
         run: |
           if [ $with_angle == "yes" ]; then
             source angle.sh
             cd $REPDIR/sources
-            build_macos_angle arm64 $osver "$xcodever" $REPDIR/macos${osver}_arm64_deps $REPDIR/data
+            build_macos_angle arm64 $osver "$xcodever" ${INSTALLDIR}/macos${osver}_arm64_deps $REPDIR/data
           fi
 
       - name: Build deps for x86_64
@@ -75,12 +76,12 @@ jobs:
           mkdir $REPDIR/x86_64_deps
           cd $REPDIR/x86_64_deps
           untar_macos_deps $REPDIR/sources
-          build_macos_deps x86_64 $osver "$xcodever" $REPDIR/macos${osver}_x86_64_deps
+          build_macos_deps x86_64 $osver "$xcodever" ${INSTALLDIR}/macos${osver}_x86_64_deps
 
       - name: Create archive from arm64 and x86_64 deps
         run: |
-          tar -czvf macos${osver}_arm64_deps.tar.gz macos${osver}_arm64_deps
-          tar -czvf macos${osver}_x86_64_deps.tar.gz macos${osver}_x86_64_deps
+          tar -czvf macos${osver}_arm64_deps.tar.gz ${INSTALLDIR}/macos${osver}_arm64_deps
+          tar -czvf macos${osver}_x86_64_deps.tar.gz ${INSTALLDIR}/macos${osver}_x86_64_deps
 
       - name: Upload deps for arm64
         uses: actions/upload-artifact@v4
