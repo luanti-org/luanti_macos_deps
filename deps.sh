@@ -23,6 +23,7 @@ download_macos_deps() {
 	download_macos_archive luajit.zip https://github.com/sfence/LuaJIT/archive/refs/heads/sfence_macos_fix_and_map_jit.zip 54ff78769b99b68570e959256240469b48b08cfd9a74da24c8800a5dc1cbd79b
 	download_macos_archive zstd.tar.gz https://github.com/facebook/zstd/archive/refs/tags/v1.5.6.tar.gz 30f35f71c1203369dc979ecde0400ffea93c27391bfd2ac5a9715d2173d92ff7
 	download_macos_archive sdl2.tar.gz https://github.com/libsdl-org/SDL/releases/download/release-2.32.0/SDL2-2.32.0.tar.gz f5c2b52498785858f3de1e2996eba3c1b805d08fe168a47ea527c7fc339072d0
+	download_macos_archive openal-soft.tar.gz https://github.com/kcat/openal-soft/archive/refs/tags/1.24.3.tar.gz 7e1fecdeb45e7f78722b776c5cf30bd3    3934b961d7fd2a11e0494e064cc631ce
 }
 
 untar_macos_deps() {
@@ -40,6 +41,7 @@ untar_macos_deps() {
 	unzip 	$downdir/luajit.zip
 	tar -xf $downdir/zstd.tar.gz
 	tar -xf $downdir/sdl2.tar.gz
+	tar -xf $downdir/openal-soft.tar.gz
 }
 
 check_macos_file() {
@@ -246,5 +248,21 @@ build_macos_deps() {
 	make -j$(sysctl -n hw.logicalcpu)
 	make install
 	check_macos_file "$installdir/lib/libSDL2.a"
+	cd $dir
+
+	# OpenAL-soft
+	cd openal-soft-*
+	rm -fr build
+	mkdir build
+	cd build
+	echo "Configuring OpenAL-soft..."
+	cmake .. "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
+					-DCMAKE_OSX_DEPLOYMENT_TARGET=$osver \
+					-DCMAKE_OSX_ARCHITECTURES=$arch -DCMAKE_OSX_SYSROOT=$target_sysroot \
+					-DLIBTYPE=STATIC -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=OFF \
+					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
+	echo "Building OpenAL-soft..."
+	make -j$(sysctl -n hw.logicalcpu)
+	make install 2>&1
 	cd $dir
 }
