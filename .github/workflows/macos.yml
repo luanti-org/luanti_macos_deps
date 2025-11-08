@@ -80,8 +80,11 @@ jobs:
 
       - name: Create archive from arm64 and x86_64 deps
         run: |
-          tar -czvf macos${osver}_arm64_deps.tar.gz ${INSTALLDIR}/macos${osver}_arm64_deps
-          tar -czvf macos${osver}_x86_64_deps.tar.gz ${INSTALLDIR}/macos${osver}_x86_64_deps
+          TARDIR=$(pwd)
+          cd ${INSTALLDIR}
+          tar -czvf ${TARDIR}/macos${osver}_arm64_deps.tar.gz macos${osver}_arm64_deps
+          tar -czvf ${TARDIR}/macos${osver}_x86_64_deps.tar.gz macos${osver}_x86_64_deps
+          cd ${PWD}
 
       - name: Upload deps for arm64
         uses: actions/upload-artifact@v4
