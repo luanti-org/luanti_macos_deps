@@ -84,7 +84,7 @@ jobs:
           cd ${INSTALLDIR}
           tar -czvf ${TARDIR}/macos${osver}_arm64_deps.tar.gz macos${osver}_arm64_deps
           tar -czvf ${TARDIR}/macos${osver}_x86_64_deps.tar.gz macos${osver}_x86_64_deps
-          cd ${PWD}
+          cd ${TARDIR}
 
       - name: Upload deps for arm64
         uses: actions/upload-artifact@v4
