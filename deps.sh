@@ -20,7 +20,7 @@ download_macos_deps() {
 	download_macos_archive libogg.tar.gz https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.5.tar.gz 0eb4b4b9420a0f51db142ba3f9c64b333f826532dc0f48c6410ae51f4799b664
 	download_macos_archive libpng.tar.xz https://downloads.sourceforge.net/project/libpng/libpng16/1.6.43/libpng-1.6.43.tar.xz 6a5ca0652392a2d7c9db2ae5b40210843c0bbc081cbd410825ab00cc59f14a6c
 	download_macos_archive libvorbis.tar.gz https://github.com/sfence/libvorbis/archive/refs/tags/v1.3.7_macos_apple_silicon.tar.gz 61dd22715136f13317326ea60f9c1345529fbc1bf84cab99d6b7a165bf86a609
-	download_macos_archive luajit.zip https://github.com/sfence/LuaJIT/archive/refs/heads/v2.1.zip 1152227b917d8a96ace076fb0a230db5ee19fec58a66ae9420f81d491ae0fc84
+	download_macos_archive luajit.zip https://github.com/sfence/LuaJIT/archive/refs/heads/v2.1.zip 17ed9de0c3260de1932933121498437a276a25d117f175b6007458cc4617e1ea
 	download_macos_archive zstd.tar.gz https://github.com/facebook/zstd/archive/refs/tags/v1.5.6.tar.gz 30f35f71c1203369dc979ecde0400ffea93c27391bfd2ac5a9715d2173d92ff7
 	download_macos_archive sdl2.tar.gz https://github.com/libsdl-org/SDL/releases/download/release-2.32.0/SDL2-2.32.0.tar.gz f5c2b52498785858f3de1e2996eba3c1b805d08fe168a47ea527c7fc339072d0
 	download_macos_archive openal-soft.tar.gz https://github.com/kcat/openal-soft/archive/refs/tags/1.24.3.tar.gz 7e1fecdeb45e7f78722b776c5cf30bd33934b961d7fd2a11e0494e064cc631ce
