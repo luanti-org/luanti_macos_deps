@@ -56,6 +56,7 @@ build_macos_deps() {
 	osver=$2
 	xcodever=$3
 	installdir=$4
+	with_angle=$5
 	
 	dir=$(pwd)
 
@@ -155,7 +156,7 @@ build_macos_deps() {
 	cd libjpeg-turbo-*
 	echo "Configuring libjpeg-turbo..."
 	cmake . "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
-					-DCMAKE_OSX_ARCHITECTURES=$arch §\
+					-DCMAKE_OSX_ARCHITECTURES=$arch \
 					-DBUILD_SHARED_LIBS=OFF \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building libjpeg-turbo..."
@@ -238,11 +239,15 @@ build_macos_deps() {
 	mkdir build
 	cd build
 	echo "Configuring SDL2..."
+	SDL_OPENGL=0
+	if [[ "$with_angle" == "yes" ]]; then
+		SDL_OPENGL=1
+	fi
 	cmake .. "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
 					-DCMAKE_OSX_DEPLOYMENT_TARGET=$osver \
-					-DCMAKE_OSX_ARCHITECTURES=$arch -DCMAKE_OSX_SYSROOT=$target_sysroot \
+					-DCMAKE_OSX_ARCHITECTURES=$arch \
 					-DBUILD_SHARED_LIBS=OFF \
-					-DSDL_OPENGL=0 -DSDL_OPENGLES=0 \
+					-DSDL_OPENGL=${SDL_OPENGL} -DSDL_OPENGLES=0 \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building SDL2..."
 	make -j$(sysctl -n hw.logicalcpu)
@@ -258,7 +263,7 @@ build_macos_deps() {
 	echo "Configuring OpenAL-soft..."
 	cmake .. "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
 					-DCMAKE_OSX_DEPLOYMENT_TARGET=$osver \
-					-DCMAKE_OSX_ARCHITECTURES=$arch -DCMAKE_OSX_SYSROOT=$target_sysroot \
+					-DCMAKE_OSX_ARCHITECTURES=$arch \
 					-DLIBTYPE=STATIC -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=OFF \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building OpenAL-soft..."
