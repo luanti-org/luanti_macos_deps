@@ -8,15 +8,10 @@ jobs:
   build_macos_deps:
     strategy:
       matrix:
-        osver: [11.3,12.3]
+        osver: [11.3]
         xcodever: [16.2]
-        arch: [arm64, x86_64]
-        with_angle: [no, yes]
-        exclude:
-          - osver: 11.3
-            with_angle: yes
-          - osver: 12.3
-            with_angle: no
+        arch: [arm64]
+        with_angle: [no]
         include:
           - osver: 11.3
             xcodever: 16.2
