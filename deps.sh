@@ -239,9 +239,9 @@ build_macos_deps() {
 	mkdir build
 	cd build
 	echo "Configuring SDL2..."
-	SDL_OPENGL=0
+	SDL_OPENGL=1
 	if [[ "$with_angle" == "yes" ]]; then
-		SDL_OPENGL=1
+		SDL_OPENGL=0
 	fi
 	cmake .. "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
 					-DCMAKE_OSX_DEPLOYMENT_TARGET=$osver \

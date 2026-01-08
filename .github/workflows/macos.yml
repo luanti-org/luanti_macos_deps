@@ -10,6 +10,7 @@ jobs:
       matrix:
         osver: [11.3,12.3]
         xcodever: [16.2]
+        arch: [arm64, x86_64]
         with_angle: [no, yes]
         exclude:
           - osver: 11.3
@@ -19,10 +20,17 @@ jobs:
         include:
           - osver: 11.3
             xcodever: 16.2
+            arch: arm64
+            with_angle: no
+          - osver: 11.3
+            xcodever: 16.2
+            arch: x86_64
             with_angle: no
           - osver: 12.3
             xcodever: 16.2
+            arch: arm64
             with_angle: yes
+
     runs-on: macos-15
     permissions:
       contents: write
@@ -35,16 +43,15 @@ jobs:
           echo "INSTALLDIR=/Users/Shared" >> $GITHUB_ENV
           echo "osver=${{matrix.osver}}" >> $GITHUB_ENV
           echo "xcodever=${{matrix.xcodever}}" >> $GITHUB_ENV
+          echo "arch=${{matrix.arch}}" >> $GITHUB_ENV
           echo "with_angle=${{matrix.with_angle}}" >> $GITHUB_ENV
           if [ "${{matrix.with_angle}}" == "yes" ]; then
-            echo "ARM64_ARTIFACT_NAME=macos${{matrix.osver}}_arm64_angle_deps" >> $GITHUB_ENV
-            echo "ARM64_FILE_NAME=macos${{matrix.osver}}_arm64_angle_deps.tar.gz" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=macos${{matrix.osver}}_${{matrix.arch}}_angle_deps" >> $GITHUB_ENV
+            echo "FILE_NAME=macos${{matrix.osver}}_${{matrix.arch}}_angle_deps.tar.gz" >> $GITHUB_ENV
           else
-            echo "ARM64_ARTIFACT_NAME=macos${{matrix.osver}}_arm64_deps" >> $GITHUB_ENV
-            echo "ARM64_FILE_NAME=macos${{matrix.osver}}_arm64_deps.tar.gz" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=macos${{matrix.osver}}_${{matrix.arch}}_deps" >> $GITHUB_ENV
+            echo "FILE_NAME=macos${{matrix.osver}}_${{matrix.arch}}_deps.tar.gz" >> $GITHUB_ENV
           fi
-          echo "X86_64_ARTIFACT_NAME=macos${{matrix.osver}}_x86_64_deps" >> $GITHUB_ENV
-          echo "X86_64_FILE_NAME=macos${{matrix.osver}}_x86_64_deps.tar.gz" >> $GITHUB_ENV
           brew install nasm m4 autoconf automake libtool
 
       - name: Download macOS SDK
@@ -63,66 +70,41 @@ jobs:
             clone_macos_angle "$REPDIR/data"
           fi
 
-      - name: Build deps for arm64
+      - name: Build deps
         run: |
           source deps.sh
-          mkdir "$REPDIR/arm64_deps"
-          cd "$REPDIR/arm64_deps"
+          mkdir "$REPDIR/${arch}_deps"
+          cd "$REPDIR/${arch}_deps"
           untar_macos_deps "$REPDIR/sources"
-          build_macos_deps arm64 $osver "$xcodever" "$INSTALLDIR/$ARM64_ARTIFACT_NAME" $with_angle
+          build_macos_deps $arch $osver "$xcodever" "$INSTALLDIR/$ARTIFACT_NAME" $with_angle
 
-      - name: Build ANGLE for arm64
+      - name: Build ANGLE
         run: |
           if [ $with_angle == "yes" ]; then
             source angle.sh
             cd "$REPDIR/sources"
-            build_macos_angle arm64 $osver "$xcodever" "$INSTALLDIR/$ARM64_ARTIFACT_NAME" "$REPDIR/data"
+            build_macos_angle $arch $osver "$xcodever" "$INSTALLDIR/$ARTIFACT_NAME" "$REPDIR/data"
           fi
 
-      - name: Build deps for x86_64
-        run: |
-          source deps.sh
-          mkdir "$REPDIR/x86_64_deps"
-          cd "$REPDIR/x86_64_deps"
-          untar_macos_deps "$REPDIR/sources"
-          build_macos_deps x86_64 $osver "$xcodever" "$INSTALLDIR/$X86_64_ARTIFACT_NAME"
-
-      - name: Create archive from arm64 and x86_64 deps
+      - name: Create archive from deps
         run: |
           TARDIR=$(pwd)
           cd ${INSTALLDIR}
-          tar -czvf ${TARDIR}/$ARM64_FILE_NAME "$ARM64_ARTIFACT_NAME"
-          tar -czvf ${TARDIR}/$X86_64_FILE_NAME "$X86_64_ARTIFACT_NAME"
+          tar -czvf ${TARDIR}/$FILE_NAME "$ARTIFACT_NAME"
           cd ${TARDIR}
 
-      - name: Upload deps for arm64
+      - name: Upload deps
         uses: actions/upload-artifact@v4
         with:
-          name: ${{env.ARM64_ARTIFACT_NAME}}
-          path: ./${{env.ARM64_FILE_NAME}}
+          name: ${{env.ARTIFACT_NAME}}
+          path: ./${{env.FILE_NAME}}
 
-      - name: Upload deps for x86_64
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{env.X86_64_ARTIFACT_NAME}}
-          path: ./${{env.X86_64_FILE_NAME}}
-
-      - name: Upload Release Asset for arm64
+      - name: Upload Release Asset
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./${{env.ARM64_FILE_NAME}}
-          asset_name: ${{env.ARM64_FILE_NAME}}
-          overwrite: true
-          tag: latest
-
-      - name: Upload Release Asset for x86_64
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./${{env.X86_64_FILE_NAME}}
-          asset_name: ${{env.X86_64_FILE_NAME}}
+          file: ./${{env.FILE_NAME}}
+          asset_name: ${{env.FILE_NAME}}
           overwrite: true
           tag: latest
