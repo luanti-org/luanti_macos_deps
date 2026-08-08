@@ -24,6 +24,7 @@ download_macos_deps() {
 	download_macos_archive zstd.tar.gz https://github.com/facebook/zstd/archive/refs/tags/v1.5.6.tar.gz 30f35f71c1203369dc979ecde0400ffea93c27391bfd2ac5a9715d2173d92ff7
 	download_macos_archive sdl2.tar.gz https://github.com/libsdl-org/SDL/releases/download/release-2.32.0/SDL2-2.32.0.tar.gz f5c2b52498785858f3de1e2996eba3c1b805d08fe168a47ea527c7fc339072d0
 	download_macos_archive openal-soft.tar.gz https://github.com/kcat/openal-soft/archive/refs/tags/1.24.3.tar.gz 7e1fecdeb45e7f78722b776c5cf30bd33934b961d7fd2a11e0494e064cc631ce
+	download_macos_archive libzip.tar.xz https://github.com/nih-at/libzip/releases/download/v1.11.4/libzip-1.11.4.tar.xz 8a247f57d1e3e6f6d11413b12a6f28a9d388de110adc0ec608d893180ed7097b
 }
 
 untar_macos_deps() {
@@ -42,6 +43,7 @@ untar_macos_deps() {
 	tar -xf $downdir/zstd.tar.gz
 	tar -xf $downdir/sdl2.tar.gz
 	tar -xf $downdir/openal-soft.tar.gz
+	tar -xf $downdir/libzip.tar.xz
 }
 
 check_macos_file() {
@@ -57,12 +59,19 @@ build_macos_deps() {
 	xcodever=$3
 	installdir=$4
 	with_angle=$5
+
+	echo "Building deps with params:"
+	echo "arch = $arch"
+	echo "osver = $osver"
+	echo "xcodever = $xcodever"
+	echo "installdir = $installdir"
+	echo "with_angle = $with_angle"
 	
 	dir=$(pwd)
 
 	# setup environment
 	xcodeapp="Xcode.app"
-	if [[ -n $xcodever ]]; then
+	if [[ -n "$xcodever" ]]; then
 		xcodeapp="Xcode_$xcodever.app"
 	fi
 	sysroot="/Applications/$xcodeapp/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${osver}.sdk"
@@ -74,7 +83,7 @@ build_macos_deps() {
 		echo "Requested sysroot SDK does not found MacOSX${osver}.sdk (sysroot = $sysroot)"
 		exit 1
 	fi
-	if [[ -n $xcodever ]]; then
+	if [[ -n "$xcodever" ]]; then
 		sudo xcode-select -s /Applications/$xcodeapp/Contents/Developer
 	fi
 
@@ -86,6 +95,7 @@ build_macos_deps() {
 	export CXX="clang++ -arch ${arch} -isysroot $sysroot"
 	export LDFLAGS="-arch ${arch}"
 	export SDKROOT=$sysroot
+	M4=$(realpath /opt/homebrew/Cellar/m4/*/bin/m4)
 	hostdarwin="--host=${arch}-apple-darwin"
 	hostmacos="--host=${arch}-apple-macos${osver}"
 	hostdarwin_limit="--host=${arch}-apple-darwin"
@@ -95,9 +105,9 @@ build_macos_deps() {
 
 	# libpng
 	cd libpng-*
-	echo "Configuring libpng..."
+	echo "configuring libpng..."
 	./configure "--prefix=$installdir" $hostdarwin --enable-static --disable-shared
-	echo "Building libpng..."
+	echo "building libpng..."
 	make -j$(sysctl -n hw.logicalcpu)
 	make check
 	make install
@@ -143,7 +153,7 @@ build_macos_deps() {
 	fi
 	#./configure "--prefix=$installdir" --with-pic M4=/usr/local/Cellar/m4/1.4.20/bin/m4
 	./configure "--prefix=$installdir" --enable-static --disable-shared \
-							--with-pic M4=/opt/homebrew/Cellar/m4/1.4.20/bin/m4 \
+							--with-pic M4=$M4 \
 							$hostdarwin $assembly
 	echo "Building gmp..."
 	make -j$(sysctl -n hw.logicalcpu)
@@ -270,4 +280,23 @@ build_macos_deps() {
 	make -j$(sysctl -n hw.logicalcpu)
 	make install 2>&1
 	cd $dir
+
+	# libzip
+	cd libzip-*
+	logdir=$(pwd)
+	rm -fr build
+	mkdir build
+	cd build
+	echo "Configuring libzip..."
+	cmake .. "-DCMAKE_INSTALL_PREFIX:PATH=$installdir" \
+					-DCMAKE_OSX_DEPLOYMENT_TARGET=$osver \
+					-DCMAKE_OSX_ARCHITECTURES=$arch \
+					-DBUILD_SHARED_LIBS=OFF \
+					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
+	echo "Building libzip..."
+	make -j$(sysctl -n hw.logicalcpu)
+	make install
+	check_macos_file "$installdir/lib/libzip.a"
+	cd $dir
+
 }

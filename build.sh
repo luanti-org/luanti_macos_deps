@@ -2,12 +2,12 @@
 
 echo "This is script automate Luanti deps build process for macOS."
 
-if [[ $# -ne 6 ]] ; then
-	echo "Usage: build.sh where_deps where_install arch osver xcodever step"
+if [[ $# -ne 7 ]] ; then
+	echo "Usage: build.sh where_deps where_install arch osver xcodever with_angle step"
 	echo "  arch  - x86_64 or arm64"
 	echo "  osver - 18.2 etc."
 	echo "  xcodever - 18.2 etc"
-	echo "  step  - all|download|untar|clone|build"
+	echo "  step  - all|download|untar|build"
 	exit 1
 fi
 
@@ -19,7 +19,8 @@ where_install=$2
 arch=$3
 osver=$4
 xcodever=$5
-step=$6
+with_angle=$6
+step=$7
 
 if [[ "$arch" != "x86_64" ]] && [[ "$arch" != "arm64" ]]; then
 	echo "Unsuported value of arch argument: $arch"
@@ -27,7 +28,7 @@ if [[ "$arch" != "x86_64" ]] && [[ "$arch" != "arm64" ]]; then
 fi
 
 source $SCRIPT_DIR/deps.sh
-#source $SCRIPT_DIR/angle.sh
+source $SCRIPT_DIR/angle.sh
 
 mkdir -p $where_deps
 mkdir -p $where_install
@@ -47,20 +48,20 @@ DEPS_DIR=$(pwd)
 
 if [[ "$step" == *"all"* ]] || [[ "$step" == *"download"* ]]; then
 	download_macos_deps
+	if [[ "$with_angle" == "yes" ]]; then
+		clone_macos_angle "$SCRIPT_DIR/data"
+	fi
 fi
 
 if [[ "$step" == *"all"* ]] || [[ "$step" == *"untar"* ]]; then
-	untar_macos_deps $where_deps
-fi
-
-if [[ "$step" == *"all"* ]] || [[ "$step" == *"clone"* ]]; then
-	echo "no angle now"
-	#clone_macos_angle "$SCRIPT_DIR/data"
+	untar_macos_deps "$where_deps"
 fi
 
 if [[ "$step" == *"all"* ]] || [[ "$step" == *"build"* ]]; then
-	build_macos_deps $arch $osver $xcodever $where_install
-	#build_macos_angle $arch $osver $xcodever $where_install "$SCRIPT_DIR/data"
+	build_macos_deps "$arch" "$osver" "$xcodever" "$where_install" "$with_angle"
+	if [[ "$with_angle" == "yes" ]]; then
+		build_macos_angle "$arch" "$osver" "$xcodever" "$where_install" "$SCRIPT_DIR/data"
+	fi
 fi
 
 cd $RUN_DIR

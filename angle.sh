@@ -4,8 +4,8 @@ clone_macos_angle() {
 	datadir=$1
 
 	depot_hash="6d817fd7f4c19cde114d7cfb62fc5b313521776b"
-	#angle_hash="6b10ae3386b706624893d6f654f3af953840b3a2"
-	angle_hash="d81d29e166b6af1181f06e56c916c06676dd6ad1"
+	#angle_hash="d81d29e166b6af1181f06e56c916c06676dd6ad1"
+	angle_hash="77a1e90bf75697b478c2a509de8c7312fb2aa853"
 
 	git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git depot_tools
 	git -C depot_tools fetch --depth 1 origin $depot_hash
@@ -35,11 +35,18 @@ build_macos_angle() {
 	xcodever=$3
 	installdir=$4
 	datadir=$5
+	
+	echo "Building deps with params:"
+	echo "arch = $arch"
+	echo "osver = $osver"
+	echo "xcodever = $xcodever"
+	echo "installdir = $installdir"
+	echo "datadir = $datadir"
 
 	export PATH=$PWD/depot_tools:$PATH
 
 	xcodeapp="Xcode.app"
-	if [[ -n $xcodever ]]; then
+	if [[ -n "$xcodever" ]]; then
 		xcodeapp="Xcode_$xcodever.app"
 		sudo xcode-select -s /Applications/$xcodeapp/Contents/Developer
 	fi
