@@ -292,6 +292,7 @@ build_macos_deps() {
 					-DCMAKE_OSX_DEPLOYMENT_TARGET=$osver \
 					-DCMAKE_OSX_ARCHITECTURES=$arch \
 					-DBUILD_SHARED_LIBS=OFF \
+					-DENABLE_LZMA=OFF \
 					-DCMAKE_INSTALL_NAME_DIR=$installdir/lib
 	echo "Building libzip..."
 	make -j$(sysctl -n hw.logicalcpu)
