@@ -3,28 +3,30 @@
 clone_macos_angle() {
 	datadir=$1
 
-	depot_hash="6d817fd7f4c19cde114d7cfb62fc5b313521776b"
-	#angle_hash="d81d29e166b6af1181f06e56c916c06676dd6ad1"
-	angle_hash="77a1e90bf75697b478c2a509de8c7312fb2aa853"
+	#depot_hash="6d817fd7f4c19cde114d7cfb62fc5b313521776b"
+	depot_hash="fed8b43f48c4f4c2ac0c34aafbf0ec07a4e600cb"
+	angle_hash="f5a720128fb8fe77829889903007891ffc1837ec"
+	#angle_hash="77a1e90bf75697b478c2a509de8c7312fb2aa853"
 
 	git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git depot_tools
 	git -C depot_tools fetch --depth 1 origin $depot_hash
 	git -C depot_tools checkout $depot_hash
-	git clone --depth 1 https://chromium.googlesource.com/angle/angle angle
-	git -C angle fetch --depth 1 origin $angle_hash
-	git -C angle checkout $angle_hash
 
-	export PATH=$PWD/depot_tools:$PATH
+	DEPOT_TOOLS_PATH="$(realpath $PWD/depot_tools)"
+	echo "DEPOT_TOOLS_PATH=$DEPOT_TOOLS_PATH"
+	export PATH="$DEPOT_TOOLS_PATH:$PATH"
+	export VPYTHON_BYPASS="dev"
+
+	mkdir angle
+	cd angle
+	fetch --nohooks angle
+	VPYTHON_BYPASS="dev" gclient sync --no-history --revision angle@$angle_hash
+	cd ..
+
 
 	# angle
 	cd angle
 	python3 scripts/bootstrap.py
-	gclient sync
-	# for usable static libraries output
-	if ! grep -q "libANGLE_static" BUILD.gn; then
-		cat $datadir/BUILD.gn >> BUILD.gn
-	fi
-	sed -i '' '/compiler:thin_archive/d' build/config/BUILDCONFIG.gn
 
 	cd ..
 }
@@ -43,7 +45,11 @@ build_macos_angle() {
 	echo "installdir = $installdir"
 	echo "datadir = $datadir"
 
-	export PATH=$PWD/depot_tools:$PATH
+	DEPOT_TOOLS_PATH="$(realpath depot_tools)"
+	echo "DEPOT_TOOLS_PATH=$DEPOT_TOOLS_PATH"
+	export PATH="$DEPOT_TOOLS_PATH:$PATH"
+	export VPYTHON_BYPASS="dev"
+	# export PATH=$PWD/depot_tools:$PATH
 
 	xcodeapp="Xcode.app"
 	if [[ -n "$xcodever" ]]; then
@@ -63,11 +69,14 @@ build_macos_angle() {
 	ninja -j 6 -C out
 	mkdir -p $installdir/lib
 	mkdir -p $installdir/include
-	cp out/obj/libANGLE_static.a $installdir/lib
-	cp out/obj/libEGL_static.a $installdir/lib
-	cp out/obj/libGLESv2_static.a $installdir/lib
+	install_name_tool -id @rpath/libGLESv2.dylib out/libGLESv2.dylib
+	install_name_tool -id @rpath/libEGL.dylib out/libEGL.dylib
+	cp out/libGLESv2.dylib $installdir/lib
+	cp out/libEGL.dylib $installdir/lib
+	xcodebuild -create-xcframework -library out/libGLESv2.dylib -output $installdir/lib/libGLESv2.xcframework
+	xcodebuild -create-xcframework -library out/libEGL.dylib -output $installdir/lib/libEGL.xcframework
 	cp -r include $installdir/include/ANGLE
-	filecheck="$installdir/lib/libANGLE_static.a"
+	filecheck="$installdir/lib/libGLESv2.dylib"
 	if [ ! -f $filecheck ]; then
 		echo "File $filecheck not found"
 		exit 1

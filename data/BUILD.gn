@@ -1,6 +1,0 @@
-
-angle_static_library("libANGLE_static") {
-  complete_static_lib = true
-  public_deps = [":libANGLE"]
-}
-
