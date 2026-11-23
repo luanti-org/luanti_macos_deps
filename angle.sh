@@ -3,10 +3,8 @@
 clone_macos_angle() {
 	datadir=$1
 
-	#depot_hash="6d817fd7f4c19cde114d7cfb62fc5b313521776b"
-	depot_hash="fed8b43f48c4f4c2ac0c34aafbf0ec07a4e600cb"
+	depot_hash="2960e876ad78502c616e27e1a89b9e01ca77ca7e"
 	angle_hash="f5a720128fb8fe77829889903007891ffc1837ec"
-	#angle_hash="77a1e90bf75697b478c2a509de8c7312fb2aa853"
 
 	git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git depot_tools
 	git -C depot_tools fetch --depth 1 origin $depot_hash
