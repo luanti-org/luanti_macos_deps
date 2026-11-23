@@ -15,14 +15,17 @@ clone_macos_angle() {
 	export PATH="$DEPOT_TOOLS_PATH:$PATH"
 	export VPYTHON_BYPASS="dev"
 
-	export GIT_CONFIG_COUNT=1
-  export GIT_CONFIG_KEY_0=init.defaultBranch
-  export GIT_CONFIG_VALUE_0=main
-
 	mkdir angle
 	cd angle
-	fetch --nohooks angle
-	VPYTHON_BYPASS="dev" gclient sync --no-history --revision angle@$angle_hash
+	VPYTHON_BYPASS="dev" gclient config --spec 'solutions = [
+		{
+			"name": ".",
+			"url": "https://chromium.googlesource.com/angle/angle.git@main",
+			"deps_file": "DEPS",
+			"custom_vars": {},
+		},
+	]'
+	VPYTHON_BYPASS="dev" gclient sync --no-history --revision .@$angle_hash
 	cd ..
 
 
