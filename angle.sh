@@ -15,6 +15,10 @@ clone_macos_angle() {
 	export PATH="$DEPOT_TOOLS_PATH:$PATH"
 	export VPYTHON_BYPASS="dev"
 
+	export GIT_CONFIG_COUNT=1
+  export GIT_CONFIG_KEY_0=init.defaultBranch
+  export GIT_CONFIG_VALUE_0=main
+
 	mkdir angle
 	cd angle
 	fetch --nohooks angle
